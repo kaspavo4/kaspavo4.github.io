@@ -1,1 +1,47 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scraping Data</title>
+</head>
+<body>
+  <h1>Výsledky z Extraligy Softballu</h1>
+  <table id="data-table">
+    <thead>
+      <tr>
+        <th>Sloupec 1</th>
+        <th>Sloupec 2</th>
+        <th>Sloupec 3</th>
+        <!-- Přidej další sloupce podle potřeby -->
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
+  <script>
+    // URL backendu, který poskytuje data
+    const apiUrl = "https://softballfantasy-production.up.railway.app/";
+
+    fetch(`${apiUrl}/`)  // Změň na správný endpoint pro scrapování
+      .then(res => res.json())
+      .then(data => {
+        const tableBody = document.querySelector("#data-table tbody");
+        
+        // Zpracování získaných dat
+        data.data.forEach(rowData => {
+          const row = document.createElement("tr");
+          
+          rowData.forEach(colData => {
+            const cell = document.createElement("td");
+            cell.textContent = colData;
+            row.appendChild(cell);
+          });
+
+          tableBody.appendChild(row);
+        });
+      })
+      .catch(err => console.error("Chyba při získávání dat:", err));
+  </script>
+</body>
+</html>
