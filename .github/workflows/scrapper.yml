@@ -1,13 +1,14 @@
-name: Scraping Data
+name: Scrape Data
 
 on:
   schedule:
-    - cron: '0 0 * * *'
-  workflow_dispatch:
+    - cron: '0 0 * * *'  # Spustí se každou hodinu
+  workflow_dispatch:  # Umožní ruční spuštění v GitHub Actions
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -15,19 +16,33 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20  # Použij aktuální verzi Node.js
 
       - name: Install dependencies
         run: npm install
 
       - name: Run scraper
-        run: node scraper.js  # Tvůj scraper uloží data do data.json
+        run: node scraper.js
+
+      - name: Debug file system
+        run: |
+          echo "📂 Aktuální soubory:"
+          ls -la
+          echo "📂 Obsah složky data/:"
+          ls -la data || echo "❌ Složka data/ neexistuje"
 
       - name: Commit and push changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions@github.com"
-          git add data/player_stats.json
-          git commit -m "Updated scraped data" || echo "No changes to commit"
-          git push
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
+          if [ -f data/player_stats.json ]; then
+            git add -A
+            git commit -m "Updated scraped data" || echo "✅ Žádné nové změny"
+            git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
+          else
+            echo "⚠️ Chyba: Soubor data/player_stats.json neexistuje!"
+            exit 1  # Pokud scraper selhal, akce skončí s chybou
+          fi
