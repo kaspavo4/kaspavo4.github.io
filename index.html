@@ -22,26 +22,23 @@
   <script>
     // URL backendu, který poskytuje data
     const apiUrl = "https://softballfantasy-production.up.railway.app/";
+    console.log("xddd")
+    fetch("https://softballfantasy-production.up.railway.app/")
+        .then(res => res.text())  // Načteme odpověď jako text (ne JSON)
+        .then(data => {
+        console.log("Odpověď serveru:", data);  // Tady vidíme, co server skutečně vrací
+    
+    try {
+      const jsonData = JSON.parse(data);  // Pokus o parsování jako JSON
+      console.log(jsonData);  // Pokud je to platný JSON, vypíšeme data
+    } catch (err) {
+      console.error("Chyba při parsování JSONu:", err);
+    }
+  })
+  .catch(err => {
+    console.error("Chyba při získávání dat:", err);
+  });
 
-    fetch(`${apiUrl}/`)  // Změň na správný endpoint pro scrapování
-      .then(res => res.json())
-      .then(data => {
-        const tableBody = document.querySelector("#data-table tbody");
-        
-        // Zpracování získaných dat
-        data.data.forEach(rowData => {
-          const row = document.createElement("tr");
-          
-          rowData.forEach(colData => {
-            const cell = document.createElement("td");
-            cell.textContent = colData;
-            row.appendChild(cell);
-          });
-
-          tableBody.appendChild(row);
-        });
-      })
-      .catch(err => console.error("Chyba při získávání dat:", err));
   </script>
 </body>
 </html>

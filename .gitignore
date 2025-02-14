@@ -1,0 +1,3 @@
+node_modules/
+data/player_stats.json  # Pokud chceš, aby se generoval dynamicky
+package-lock.json
