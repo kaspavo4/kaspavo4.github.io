@@ -3,17 +3,18 @@ import fs from "fs";
 
 (async () => {
   try {
-    // Spustíme prohlížeč
-    const browser = await puppeteer.launch({ headless: "new" });
+    const browser = await puppeteer.launch({
+      headless: "new",
+      args: ["--no-sandbox", "--disable-setuid-sandbox"]  // Oprava pro GitHub Actions
+    });
+
     const page = await browser.newPage();
     const url = "https://czechsoftball.wbsc.org/cs/events/extraliga-mu-2024/stats/general/all";
 
-    // Načteme URL stránky
     await page.goto(url, { waitUntil: "networkidle2" });
 
-    // Vybereme požadovaná data (tabulka s výsledky)
     const data = await page.evaluate(() => {
-      const rows = document.querySelectorAll("table tbody tr"); // Výběr řádků tabulky
+      const rows = document.querySelectorAll("table tbody tr");
       let results = [];
 
       rows.forEach((row) => {
@@ -28,16 +29,12 @@ import fs from "fs";
       return results;
     });
 
-    // Uložíme data do JSON souboru
+    // Přidání timestampu, aby se vždy commitla změna
+    const output = {
+      scrapedAt: new Date().toISOString(),
+      data: data
+    };
+
     const filePath = "./data/player_stats.json";
-    fs.mkdirSync("./data", { recursive: true }); // Vytvoří složku, pokud neexistuje
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-
-    console.log(`Data byla úspěšně uložena do ${filePath}`);
-
-    // Zavřeme prohlížeč
-    await browser.close();
-  } catch (error) {
-    console.error("Chyba při scrapování:", error);
-  }
-})();
+    fs.mkdirSync("./data", { recursive: true });
+    fs.writeFileSync(filePath, JSON.stringify(output, nu
