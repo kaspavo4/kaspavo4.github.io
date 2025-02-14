@@ -37,4 +37,11 @@ import fs from "fs";
 
     const filePath = "./data/player_stats.json";
     fs.mkdirSync("./data", { recursive: true });
-    fs.writeFileSync(filePath, JSON.stringify(output, nu
+    fs.writeFileSync(filePath, JSON.stringify(output, null, 2));
+
+    console.log(`✅ Data byla uložena do ${filePath}`);
+    await browser.close();
+  } catch (error) {
+    console.error("❌ Chyba při scrapování:", error);
+  }
+})();
