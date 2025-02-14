@@ -27,7 +27,7 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions@github.com"
-          git add data.json
+          git add data/player_stats.json
           git commit -m "Updated scraped data" || echo "No changes to commit"
           git push
 
